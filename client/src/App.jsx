@@ -14,13 +14,34 @@ function App() {
     }
         , [])
 
-    async function fetchAudio() {
-        const response = await fetch('http://localhost:3000/speech-audio');
-        console.log(response);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setAudioSrc(url);
+    // async function fetchAudio() {
+    //     const response = await fetch('http://localhost:3000/speech-audio');
+    //     console.log(response);
+    //     const blob = await response.blob();
+    //     const url = URL.createObjectURL(blob);
+    //     setAudioSrc(url);
+    // }
+
+    const fetchAudio = async () => {
+        const text = "I AM MISTER BLOB!!!! Your desired text for speech synthesis. હું હજી ગુજરાતી શીખી રહી છું, તો મારી ગુજરાતી થોડી નબળી છે.";
+        try {
+            const response = await fetch('http://localhost:3000/text-to-speech', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text }),
+            });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                setAudioSrc(url);
+            } else {
+                throw new Error(response.statusText);
+            }
+        } catch (error) {
+            console.error("Error fetching audio: ", error);
+        }
     }
+
 
     return (
         <>
