@@ -3,10 +3,14 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-    const [audioSrc, setAudioSrc] = useState('');
+    const [audios, setAudios] = useState([]);
+
+    function addAudio(audio) {
+        setAudios([...audios, audio]);
+    }
 
     useEffect(() => {
-        // Generic fetch request 
+        // Generic fetch request to test backend is working 
         (async () => {
             const response = await fetch('http://localhost:3000/');
             console.log(response);
@@ -14,16 +18,8 @@ function App() {
     }
         , [])
 
-    // async function fetchAudio() {
-    //     const response = await fetch('http://localhost:3000/speech-audio');
-    //     console.log(response);
-    //     const blob = await response.blob();
-    //     const url = URL.createObjectURL(blob);
-    //     setAudioSrc(url);
-    // }
-
     const fetchAudio = async () => {
-        const text = "I AM MISTER BLOB!!!! Your desired text for speech synthesis. હું હજી ગુજરાતી શીખી રહી છું, તો મારી ગુજરાતી થોડી નબળી છે.";
+        const text = "That's Mister PIG! to you!";
         try {
             const response = await fetch('http://localhost:3000/text-to-speech', {
                 method: 'POST',
@@ -33,7 +29,8 @@ function App() {
             if (response.ok) {
                 const blob = await response.blob();
                 const url = URL.createObjectURL(blob);
-                setAudioSrc(url);
+                // setAudioSrc(url);
+                addAudio(url); // Support for multiple audio elements
             } else {
                 throw new Error(response.statusText);
             }
@@ -48,12 +45,11 @@ function App() {
             <h1>Client App</h1>
             <button onClick={fetchAudio}>Get Audio</button>
 
-            {/* Audio element only appears when it has a source */}
-            {audioSrc && (
-                <audio controls src={audioSrc}>
+            {audios.map((audio, index) => (
+                <audio key={index} autoPlay controls src={audio}>
                     Your browser does not support the audio element.
                 </audio>
-            )}
+            ))}
         </>
     )
 }
